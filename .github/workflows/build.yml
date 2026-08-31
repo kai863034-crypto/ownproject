@@ -11,6 +11,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check project files
+        run: |
+          echo "Current directory:"
+          pwd
+
+          echo "Repository files:"
+          ls -la
+
+          echo "FreeFireFileManager folder:"
+          ls -la FreeFireFileManager
+
+          echo "Xcode project:"
+          ls -la FreeFireFileManager.xcodeproj
+
+          test -f FreeFireFileManager/FreeFireFileManagerApp.swift
+          test -f FreeFireFileManager/ContentView.swift
+
       - name: Build unsigned app
         run: |
           xcodebuild \
