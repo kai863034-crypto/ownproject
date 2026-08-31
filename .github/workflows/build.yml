@@ -1,4 +1,4 @@
-name: iOS Build
+name: iOS IPA Build
 
 on:
   workflow_dispatch:
@@ -11,13 +11,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Show Swift version
-        run: swift --version
-
-      - name: Create Xcode project
+      - name: Build
         run: |
-          echo "Xcode project generation needs an actual .xcodeproj."
-          echo "Next step: add the Xcode project structure."
+          xcodebuild \
+            -project FreeFireFileManager.xcodeproj \
+            -scheme FreeFireFileManager \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build
 
-      - name: List files
-        run: find . -maxdepth 3 -type f
+      - name: Create IPA
+        run: |
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/FreeFireFileManager.app Payload/
+          zip -r FreeFireFileManager-unsigned.ipa Payload
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: FreeFireFileManager-unsigned-ipa
+          path: FreeFireFileManager-unsigned.ipa
